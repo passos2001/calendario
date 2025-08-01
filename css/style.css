@@ -31,7 +31,9 @@
         border: 1px solid #ccc;
         padding: 10px;
         min-height: 70px;
+        cursor: pointer;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: background 0.2s;
     }
 
     .day-number {
@@ -49,4 +51,9 @@
         text-align: center;
         background: #ddd;
         padding: 5px 0;
+    }
+
+    .day.marked {
+        background-color: #d4edda;
+        border-color: #28a745;
     }

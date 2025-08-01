@@ -44,9 +44,10 @@ function populateSelectors() {
 function generateCalendar(month, year) {
     calendar.innerHTML = "";
 
-    // Día de la semana para el primer día del mes
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const key = `markedDays-${year}`;
+    const markedDays = JSON.parse(localStorage.getItem(key)) || {};
 
     // Encabezados de días
     for (const dayName of dayNames) {
@@ -56,24 +57,35 @@ function generateCalendar(month, year) {
         calendar.appendChild(header);
     }
 
-    // Relleno antes del primer día
     for (let i = 0; i < firstDay; i++) {
         const empty = document.createElement("div");
         calendar.appendChild(empty);
     }
 
-    // Días del mes
     for (let day = 1; day <= daysInMonth; day++) {
         const date = new Date(year, month, day);
         const dayOfYear = getDayOfYear(date);
+        const dayId = `${month + 1}-${day}`; // e.g. "1-2" for 2 de enero
 
         const dayDiv = document.createElement("div");
         dayDiv.className = "day";
+        if (markedDays[dayId]) dayDiv.classList.add("marked");
 
         dayDiv.innerHTML = `
           <div class="day-number">${day}</div>
           <div class="day-of-year">Día ${dayOfYear}</div>
         `;
+
+        dayDiv.addEventListener("click", () => {
+            dayDiv.classList.toggle("marked");
+            if (markedDays[dayId]) {
+                delete markedDays[dayId];
+            } else {
+                markedDays[dayId] = true;
+            }
+            localStorage.setItem(key, JSON.stringify(markedDays));
+        });
+
         calendar.appendChild(dayDiv);
     }
 }
@@ -82,7 +94,6 @@ function generateCalendar(month, year) {
 populateSelectors();
 generateCalendar(Number(monthSelect.value), Number(yearSelect.value));
 
-// Eventos al cambiar mes o año
 monthSelect.addEventListener("change", () => {
     generateCalendar(Number(monthSelect.value), Number(yearSelect.value));
 });
